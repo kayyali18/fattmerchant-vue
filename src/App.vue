@@ -5,7 +5,7 @@
     <form @submit.prevent>
       <div id="card-number"></div>
       <div id="card-cvv"></div>
-      <button @click="handlePay" :disabled="isPayButtonDisabled">Pay</button>
+      <button :disabled="isPayButtonDisabled">Pay</button>
     </form>
   </div>
 </template>
@@ -64,6 +64,37 @@ export default {
       .catch(err => {
         console.log("Error loading form: ", err);
       });
+
+    // Handlers for form copmletion
+    // KEEP THESE IN THE LIFECYCLE METHOD
+    let disabled = "";
+    // INVALID
+    self.fattjs.on("card_form_uncomplete", message => {
+      //Message displays if form is incomplete or invalid
+      console.log(message);
+
+      // Update pay button and force it to prevent error
+      self.isPayButtonDisabled = true;
+      self.$forceUpdate();
+    });
+
+    // VALID
+    self.fattjs.on("card_form_complete", message => {
+      // Fields are valid
+      console.log(message);
+
+      // Update pay button and force it to prevent error
+      self.isPayButtonDisabled = false;
+      self.$forceUpdate();
+    });
+  },
+  methods: {
+    handleFormInputs: function() {
+      const self = this;
+    }
+  },
+  updated() {
+    console.log(this.isPayButtonDisabled);
   }
 };
 </script>
