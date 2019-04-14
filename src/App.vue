@@ -5,7 +5,7 @@
     <form @submit.prevent>
       <div id="card-number"></div>
       <div id="card-cvv"></div>
-      <button :disabled="isPayButtonDisabled">Pay</button>
+      <button @click="handlePay" :disabled="isPayButtonDisabled">Pay</button>
     </form>
   </div>
 </template>
@@ -95,6 +95,60 @@ export default {
   },
   updated() {
     console.log(this.isPayButtonDisabled);
+  },
+  methods: {
+    handlePay: function() {
+      const self = this;
+      // extra details for the transaction
+      // refactor to include dynamic form values
+      let extraDetails = {
+        method: "card",
+        total: 10,
+        firstname: "Ahmad",
+        lastname: "Basha",
+        company: "Kayyali Sons",
+        email: "kayyali18@gmail.com",
+        card_exp: "10/22",
+        month: "10",
+        year: "2020",
+        phone: "+15735297055",
+        address_1: "2307 Silver Palm Dr",
+        address_2: "Apt 302",
+        address_city: "Kissimmee",
+        address_state: "FL",
+        address_zip: "34747",
+        address_country: "USA",
+        url: "https://omni.fattmerchant.com/#/bill/",
+        send_receipt: true,
+        validate: true,
+        // Optional
+        meta: {
+          reference: "1234",
+          memo: "This is a transaction made with FattMerchant API",
+          subTotal: 1001,
+          tax: 12,
+          lineItems: [
+            {
+              id: "item-id",
+              item: "A Random Piggy Bank",
+              details: "A money saving tool",
+              quantity: 1001,
+              price: 5
+            }
+          ]
+        }
+      };
+
+      // Call pay() on the FM instance
+      self.fattjs
+        .pay(extraDetails)
+        .then(completedTransaction => {
+          console.log("Successful payment:", completedTransaction);
+        })
+        .catch(err => {
+          console.log("Payment failure:", err);
+        });
+    }
   }
 };
 </script>
